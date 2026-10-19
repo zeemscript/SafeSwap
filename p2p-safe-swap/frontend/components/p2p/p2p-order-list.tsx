@@ -2,6 +2,7 @@
 
 import { TransactionCard } from "@/frontend/components/TransactionCard/TransactionCard";
 import { TabBar } from "@/frontend/components/ui/tab-bar";
+import { Reveal } from "@/frontend/components/motion/reveal";
 import { cn } from "@/lib/utils";
 import { BestPriceCard } from "./best-price-card";
 import type { CurrencyPair, OrderMode, P2POrder } from "./types";
@@ -12,13 +13,14 @@ export interface P2POrderListProps {
   mode: OrderMode;
   onModeChange: (mode: OrderMode) => void;
   onBuy: (orderId: string) => void;
+  onOpenDetail?: (orderId: string) => void;
   className?: string;
 }
 
 const MODE_TABS: OrderMode[] = ["buy", "sell"];
 const MODE_LABELS: Record<OrderMode, string> = {
-  buy: "Comprar",
-  sell: "Vender",
+  buy: "Buy",
+  sell: "Sell",
 };
 
 function sortOrdersByBestPrice(orders: P2POrder[], mode: OrderMode) {
@@ -39,6 +41,7 @@ export function P2POrderList({
   mode,
   onModeChange,
   onBuy,
+  onOpenDetail,
   className,
 }: P2POrderListProps) {
   const sortedOrders = sortOrdersByBestPrice(orders, mode);
@@ -74,26 +77,28 @@ export function P2POrderList({
       >
         {sortedOrders.length === 0 ? (
           <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center text-sm text-muted-foreground">
-            No hay órdenes disponibles en este momento.
+            No orders available at the moment.
           </div>
         ) : (
-          sortedOrders.map((order) => (
-            <TransactionCard
-              key={order.id}
-              user={order.user.name}
-              address={order.user.address}
-              rating={order.user.rating}
-              operationCount={order.user.opsCount}
-              price={order.price}
-              available={order.available}
-              minLimit={order.limits.min}
-              maxLimit={order.limits.max}
-              windowMinutes={order.windowMinutes}
-              paymentMethods={order.paymentMethods}
-              lang="es"
-              mode={mode}
-              onBuy={() => onBuy(order.id)}
-            />
+          sortedOrders.map((order, index) => (
+            <Reveal key={order.id} delay={Math.min(index, 6) * 0.06}>
+              <TransactionCard
+                user={order.user.name}
+                address={order.user.address}
+                rating={order.user.rating}
+                operationCount={order.user.opsCount}
+                price={order.price}
+                available={order.available}
+                minLimit={order.limits.min}
+                maxLimit={order.limits.max}
+                windowMinutes={order.windowMinutes}
+                paymentMethods={order.paymentMethods}
+                lang="en"
+                mode={mode}
+                onBuy={() => onBuy(order.id)}
+                onSelect={onOpenDetail ? () => onOpenDetail(order.id) : undefined}
+              />
+            </Reveal>
           ))
         )}
       </section>
