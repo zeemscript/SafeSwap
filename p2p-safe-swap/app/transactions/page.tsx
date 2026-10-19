@@ -1,0 +1,102 @@
+"use client";
+
+import * as React from "react";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
+import {
+  TransactionList,
+  type Transaction,
+  type TransactionTab,
+} from "@/frontend/components/ui/transaction-list";
+import { ConnectWalletButton } from "@/frontend/components/wallet/ConnectWalletButton";
+import { useWallet } from "@/frontend/lib/wallet-context";
+import { useEscrows, escrowToTransaction } from "@/frontend/components/escrows";
+
+export default function TransactionsPage() {
+  const { publicKey } = useWallet();
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState<TransactionTab>("all");
+
+  // Direction is filtered client-side by TransactionList; the endpoint `role`
+  // filter is unused because the live API 400s on it.
+  const { escrows, isLoading, error, page, setPage, hasNextPage, hasPrevPage } =
+    useEscrows(publicKey, { type: "single-release" });
+
+  const transactions: Transaction[] = React.useMemo(
+    () => (publicKey ? escrows.map((e) => escrowToTransaction(e, publicKey)) : []),
+    [escrows, publicKey]
+  );
+
+  return (
+    <div className="mx-auto flex min-h-full w-full max-w-md flex-col bg-background px-4 py-6">
+      <div className="mb-4 flex justify-end">
+        <ConnectWalletButton />
+      </div>
+
+      <header className="mb-6 flex items-center justify-between">
+        <button
+          type="button"
+          aria-label="Back"
+          className="flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted"
+        >
+          <ArrowLeft className="size-5" />
+        </button>
+
+        <h1 className="text-lg font-semibold text-foreground">Transactions</h1>
+
+        <button
+          type="button"
+          aria-label="Filter transactions"
+          className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:bg-muted"
+        >
+          <SlidersHorizontal className="size-4" />
+        </button>
+      </header>
+
+      {!publicKey ? (
+        <p className="py-16 text-center text-sm text-muted-foreground">
+          Conecta tu wallet para ver tus transacciones.
+        </p>
+      ) : isLoading ? (
+        <p className="py-16 text-center text-sm text-muted-foreground">
+          Cargando transacciones…
+        </p>
+      ) : error ? (
+        <p className="py-16 text-center text-sm text-red-500">
+          No se pudieron cargar las transacciones: {error.message}
+        </p>
+      ) : (
+        <>
+          <TransactionList
+            transactions={transactions}
+            searchQuery={searchQuery}
+            activeTab={activeTab}
+            onSearch={setSearchQuery}
+            onTabChange={(tab) => setActiveTab(tab as TransactionTab)}
+          />
+
+          {(hasPrevPage || hasNextPage) && (
+            <div className="mt-6 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setPage(page - 1)}
+                disabled={!hasPrevPage}
+                className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              >
+                Anterior
+              </button>
+              <span className="text-xs text-muted-foreground">Página {page}</span>
+              <button
+                type="button"
+                onClick={() => setPage(page + 1)}
+                disabled={!hasNextPage}
+                className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}

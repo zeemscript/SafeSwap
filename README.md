@@ -1,116 +1,183 @@
-# SafeSwap
-# Web Marketplace with Escrow Contracts on Stellar
 
-Welcome to the **Web Marketplace with Escrow Contracts**, a decentralized platform for buying and selling products with escrowed payments. Powered by Stellar and integrated with the **Trustless Work API**, this marketplace offers a secure and trustless environment for transactions across various product categories.
+![SAFESWAP LOGO_ON RICH BLACK](https://github.com/user-attachments/assets/8260378d-07dd-4309-b7e0-da42247fa21c)
+# SafeSwap
+# P2P USDC Transfers on Stellar
+
+Welcome to **SafeSwap**, a peer-to-peer platform that allows users to transfer **USDC** between Stellar wallet addresses through escrow-secured transactions. Powered by the **Stellar Network** and integrated with the **Trustless Work API**, SafeSwap ensures every transfer is transparent, trustless, and protected by smart contracts.
 
 ## 🚀 Features
 
-- **Escrow-Based Transactions**: Funds are securely held in Stellar escrow contracts, ensuring both buyer and seller satisfaction.
-- **Diverse Product Categories**: Supports a wide variety of products and services.
-- **Trustless Transactions**: With the Trustless Work API, no central authority controls the escrow process; smart contracts handle all interactions.
-- **Blockchain-Powered**: Built on the Stellar blockchain, providing fast, low-cost, and transparent transactions.
-- **User-Friendly Interface**: Simple and intuitive UI designed for a seamless marketplace experience.
+- **P2P USDC Transfers**: Send USDC directly to any Stellar wallet address in a secure, peer-to-peer flow.
+- **Escrow-Protected Transactions**: Funds are held in Stellar escrow contracts and only released when both parties fulfill the agreed conditions.
+- **Trustless by Design**: No central authority controls the process — smart contracts on Stellar handle every step automatically.
+- **Trustless Work API**: Manages escrow creation, funding, completion, and dispute resolution.
+- **Fast & Low-Cost**: Built on Stellar for near-instant settlement with minimal transaction fees.
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: HTML, CSS, JavaScript, TypeScript
-- **Backend**: TBD
-- **Blockchain**: Stellar Network for handling decentralized, escrow-based transactions
-- **API**: Trustless Work API for managing the creation of the Smart Contracts
-- **Database**: TBD
+- **P2P App**: Next.js, Tailwind CSS v4, shadcn/ui
+- **Backend (legacy)**: NestJS, GraphQL (Apollo Server), Prisma
+- **Blockchain**: Stellar Network
+- **API**: Trustless Work API for escrow smart contract management
+- **Database**: PostgreSQL, Supabase
 
-## 🔑 Key Components
+## 🔑 How It Works
 
-1. **Escrow Contracts on Stellar**:
-   - Utilizes Stellar’s multi-signature and escrow capabilities to ensure funds are securely held until both parties agree to complete the transaction.
-   - The smart contract manages the funds automatically, releasing payment only when both the buyer and seller meet the contract conditions.
+The UI is intentionally minimal — no unnecessary steps, no friction.
 
-2. **Trustless Work API Integration**:
-   - The Trustless Work API is used to manage contract interactions, initiate transactions, and handle workflow automations for the escrow process.
-
-3. **Product Marketplace**:
-   - A user-friendly platform where sellers can list products, and buyers can browse and make purchases.
-   - Categories for a wide variety of products, from physical items to digital goods.
+1. **Browse Listings**: Users see a simple list of people who want to buy or sell USDC. Each listing shows the amount, direction (buy/sell), and the user's Stellar wallet address.
+2. **Match & Connect**: A user picks a counterpart from the list whose offer matches their need.
+3. **Initiate the Transfer**: Both parties agree on the amount. An escrow contract is created via the Trustless Work API, locking the USDC on the Stellar blockchain.
+4. **Fund the Escrow**: The sender deposits the USDC into the escrow contract.
+5. **Release**: Once both parties confirm, the contract releases the funds to the recipient's Stellar wallet automatically.
+6. **Dispute Resolution**: If something goes wrong, either party can open a dispute handled by the escrow contract.
 
 ## 📄 Usage
 
 ### Prerequisites
-- TBD
+
+- **Node.js** version 20 or higher
+    - Refer to the [Node.js official documentation](https://nodejs.org/) to download and install the latest version.
+    - To check your installed Node.js version:
+
+        ```bash
+        node -v
+        ```
+
+- **npm** version 10.9.2 or higher
+    - To check your installed npm version:
+
+        ```bash
+        npm -v
+        ```
+
+    - To globally install or update npm:
+
+        ```bash
+        npm install -g npm@10.9.2
+        ```
 
 ### Installation
 
 1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/marketplace-escrow-stellar.git
-   cd marketplace-escrow-stellar
-   ```
+
+    ```bash
+    git clone https://github.com/your-username/SafeSwap.git
+    cd SafeSwap
+    ```
 
 2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
 
-3. **Configure Environment Variables**:
-   - Create a `.env` file in the root directory and add your Stellar and Trustless Work API keys:
-     ```plaintext
-     STELLAR_SECRET_KEY=your_stellar_secret_key
-     TRUSTLESS_API_KEY=your_trustless_work_api_key
-     ```
+    ```bash
+    npm install
+    ```
 
-4. **Start the Application**:
-   ```bash
-   npm start
-   ```
+3. **Environment Variables**:
 
-### Frontend
+    Copy `.env.example` to `.env.local` in the relevant app folder and fill in your values:
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+    ```bash
+    cp p2p-safe-swap/.env.local p2p-safe-swap/.env.local
+    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+    Required variables:
+    - `NEXT_PUBLIC_SUPABASE_URL` — your Supabase project URL
+    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — your Supabase anon key
+    - `SUPABASE_SERVICE_ROLE_KEY` — your Supabase service role key (server-side only)
+    - `TRUSTLESS_WORK_API_KEY` — your Trustless Work API key (server-side only)
 
-3. Run development server:
-   ```bash
-   npm run dev
-   ```
+    Full Supabase setup (projects, CLI, and client wrappers) is documented in
+    [`docs/SUPABASE-SETUP.md`](docs/SUPABASE-SETUP.md).
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+### Running Supabase migrations locally
 
-Available Commands:
-- `npm run web:dev` - Start development server
-- `npm run web:build` - Create production build
-- `npm run web:start` - Start production server
-- `npm run web:lint` - Run Biome linter
+The repo ships Supabase CLI configuration in `supabase/config.toml` with
+migrations in `supabase/migrations/` and a local dev seed in
+`supabase/seed.sql`.
+
+1. Install the [Supabase CLI](https://supabase.com/docs/guides/cli).
+2. Start the local stack and apply all migrations + seed:
+
+    ```bash
+    supabase start
+    supabase db reset
+    ```
+
+    Or from the app folder: `npm run db:reset`.
+
+3. Push migrations to a linked remote project (dev/prod) with
+   `supabase db push`.
+
+See [`docs/SUPABASE-SETUP.md`](docs/SUPABASE-SETUP.md) for CLI linking,
+environment variables, and the browser/server client wrappers.
+
+---
+
+### Available Commands
+
+- `npm run dev` — Starts all applications in development mode.
+- `npm run build` — Builds all applications for production.
+
+---
+
+### Running Specific Applications
+
+Run individual applications directly from the root directory:
+
+1. **P2P App**:
+
+    ```bash
+    cd p2p-safe-swap
+    ```
+    
+    ```bash
+    npm run dev
+    ```
+
+---
+
+### Applications in the Monorepo
+
+| App | Description | Path |
+|---|---|---|
+| **p2p-safe-swap** | P2P USDC transfer app built with Next.js 16 and Tailwind v4 | `p2p-safe-swap/` |
+
+---
 
 ## 📚 Documentation
 
-For detailed frontend documentation, see the [README.md](frontend/README.md) file.
+- [p2p-safe-swap README](p2p-safe-swap/README.md)
+- [colors doc](https://github.com/Kaizenode/SafeSwap/blob/main/docs/guidelines/colors.md)
 
-### How It Works
+## 🤝 Contributing
 
-1. **Listing a Product**: Sellers can create listings for products. Each listing includes information such as price, description, and images.
-2. **Making a Purchase**: Buyers can select a product and initiate a purchase. Funds are transferred to an escrow account on the Stellar blockchain.
-3. **Escrow Release**: Upon completion of the agreed-upon conditions, the Trustless Work API triggers the release of funds to the seller’s Stellar account.
+We appreciate and welcome contributions! Please review our [CONTRIBUTING GUIDELINES](docs/guidelines/CONTRIBUTION_GUIDELINES.md) and [GIT GUIDELINES](docs/guidelines/GIT_GUIDELINES.md) before submitting a PR.
+
+## 🧑‍💻 Authors
+
+<table align="center">
+  <tr>
+    <td align="center" valign="top" width="25%">
+      <img src="https://avatars.githubusercontent.com/u/66186331?v=4" alt="Daniel Calderón Díaz" width="120" />
+      <br />
+      <strong>Daniel Calderón Díaz</strong>
+      <br />
+      <a href="https://github.com/danielcdz" target="_blank">
+        GitHub
+      </a>
+    </td>
+    <td align="center" valign="top" width="25%">
+      <img src="https://avatars.githubusercontent.com/u/85724318?v=4" alt="Diego Duarte Fernández" width="120" />
+      <br />
+      <strong>Diego Duarte Fernández</strong>
+      <br />
+      <a href="https://github.com/diegoTech14" target="_blank">
+        GitHub
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
-
-
-## 🧑‍💻 Authors
-
-- [danielcdz](https://github.com/danielcdz)
-- Contributions from the open-source community and OnlyDust
-
-## 📞 Contact
-
-- 

@@ -1,33 +1,5 @@
-# dependencies
-node_modules
-.pnp
-.pnp.js
-
-# testing
-coverage
-
-# next.js
-.next/
-out/
-build
-dist
-
-# misc
+# macOS
 .DS_Store
-*.pem
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-.env
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Local working context (personal notes, not part of the repo)
+z-context/
